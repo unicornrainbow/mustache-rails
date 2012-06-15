@@ -50,16 +50,7 @@ module ActionView
       #
       # Returns String.
       def on_section(name, content, raw, delims)
-        code = compile!(content)
-
-        enum_check = defined?(Enumerator) ? "|| v.is_a?(Enumerator)" : ""
-
-        "if v = #{compile!(name)};\n" +
-          "s = lambda { #{code} }; " +
-          "if v == true; s.call; " +
-          "elsif v.is_a?(Proc); @output_buffer.concat(v.call { capture(&s); }.to_s); " +
-          "else; (v = [v] unless v.is_a?(Array) #{enum_check}); for h in v; ctx.push(h); s.call; ctx.pop; end; end;\n" +
-        "end; "
+        "v = #{compile!(name)}; ctx._eval_section(@output_buffer, v) {\n#{compile!(content)}\n}; "
       end
 
       # Internal: Compile inverted section.
@@ -69,10 +60,7 @@ module ActionView
       #
       # Returns String.
       def on_inverted_section(name, content, raw, delims)
-        "v = #{compile!(name)}; " +
-          "if (v.nil? || v == false || v.respond_to?(:empty?) && v.empty?);\n" +
-          compile!(content) +
-        "end;\n"
+        "v = #{compile!(name)}; ctx._eval_inverted_section(@output_buffer, v) {\n#{compile!(content)}\n}; "
       end
 
       # Internal: Compile partial render call.
@@ -91,8 +79,7 @@ module ActionView
       #
       # Returns String.
       def on_utag(name)
-        "v = #{compile!(name)}; v = v.call.to_s if v.is_a?(Proc); " +
-          "@output_buffer.safe_concat(v.to_s); "
+        "v = #{compile!(name)}; ctx._eval_utag(@output_buffer, v); "
       end
 
       # Internal: Compile escaped tag.
@@ -101,8 +88,7 @@ module ActionView
       #
       # Returns String.
       def on_etag(name)
-        "v = #{compile!(name)}; v = v.call.to_s if v.is_a?(Proc); " +
-          "@output_buffer.concat(v.to_s); "
+        "v = #{compile!(name)}; ctx._eval_etag(@output_buffer, v); "
       end
 
       # Internal: Compile fetch lookup.
