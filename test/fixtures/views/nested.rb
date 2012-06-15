@@ -1,19 +1,14 @@
 class Nested < ActionView::Mustache
   def categories
-    topic_1 = {
-      "title" => "Topic 1"
-    }
-
-    category_a = {
-      "title" => "Category A",
-      "topics" => [topic_1]
-    }
-
-    category_b = {
-      "title" => "Category B",
-      "topics" => []
-    }
-
-    [category_a, category_b]
+    [
+      {
+        :title => "Category A",
+        :topics => [{:title => "Topic 1"}]
+      },
+      {
+        :title => "Category B",
+        :topics => []
+      }
+    ]
   end
 end
