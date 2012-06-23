@@ -48,7 +48,7 @@ class Mustache
     # Returns String or Class.
     config.mustache.view_namespace = "::Views"
 
-    # Internal: Ensures view path is encluded in autoload path.
+    # Internal: Ensures view path is included in autoload path.
     initializer 'mustache.add_autoload_paths', :before => :set_autoload_paths do |app|
       app.config.autoload_paths << app.root.join(app.config.mustache.view_path).to_s
     end
