@@ -16,6 +16,10 @@ module ActionView
         # is kinda nasty. It'd better to avoid the global and always
         # use our application's config object.
         cattr_accessor :mustache_view_namespace
+
+        # Default class to use if no view class is found.
+        # A nil value will raise an exception.
+        cattr_accessor :default_mustache_view_class
       end
 
       # Public: Get Mustache View Class for template.
@@ -36,14 +40,48 @@ module ActionView
       #
       # Returns Class or raises a TypeError.
       def mustache_view_class
-        return ActionView::Mustache unless @virtual_path
-        klass_name = "#{mustache_view_namespace}/#{@virtual_path}".camelize
-        begin
-          klass = klass_name.constantize
-        rescue NameError => e
-          load_path = ActiveSupport::Dependencies.autoload_paths.map { |p| "  #{p}\n" }.join
-          raise NameError, "Couldn't find #{klass_name}\n#{load_path}"
+        if @virtual_path
+          begin
+            klass = "#{mustache_view_namespace}/#{@virtual_path}"
+            load_mustache_view_class_name(klass)
+          rescue NameError => e
+            if klass = default_mustache_view_class
+              load_mustache_view_class_name(klass)
+            else
+              raise e
+            end
+          end
+        else
+          if klass = default_mustache_view_class
+            load_mustache_view_class_name(klass)
+          else
+            ActionView::Mustache
+          end
         end
+      end
+
+      # Internal: Load Mustache View class.
+      #
+      # klass_name - Actual Class or String of class name.
+      #
+      # Returns view class that is a subclass of ActionView::Mustache
+      # or raises an exception.
+      def load_mustache_view_class_name(klass_name)
+        case klass_name
+        when String
+          klass_name = klass_name.camelize
+          begin
+            klass = klass_name.constantize
+          rescue NameError => e
+            load_path = ActiveSupport::Dependencies.autoload_paths.map { |p| "  #{p}\n" }.join
+            raise NameError, "Couldn't find #{klass_name}\n#{load_path}"
+          end
+        when Class
+          klass = klass_name
+        else
+          raise ArgumentError, "#{klass_name} isn't a Class"
+        end
+
         unless klass < ActionView::Mustache
           raise TypeError, "#{klass} isn't a subclass of ActionView::Mustache"
         end
