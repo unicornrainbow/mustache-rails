@@ -19,7 +19,7 @@ module ActionView
 
         # Default class to use if no view class is found.
         # A nil value will raise an exception.
-        cattr_accessor :default_mustache_view_class
+        cattr_accessor :mustache_default_view_class
       end
 
       # Public: Get Mustache View Class for template.
@@ -45,14 +45,14 @@ module ActionView
             klass = "#{mustache_view_namespace}/#{@virtual_path}"
             load_mustache_view_class_name(klass)
           rescue NameError => e
-            if klass = default_mustache_view_class
+            if klass = mustache_default_view_class
               load_mustache_view_class_name(klass)
             else
               raise e
             end
           end
         else
-          if klass = default_mustache_view_class
+          if klass = mustache_default_view_class
             load_mustache_view_class_name(klass)
           else
             ActionView::Mustache

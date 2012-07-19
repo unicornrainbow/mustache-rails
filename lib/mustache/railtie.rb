@@ -48,6 +48,18 @@ class Mustache
     # Returns String or Class.
     config.mustache.view_namespace = "::Views"
 
+    # Public: Set default Mustache View class to use if none is found.
+    #
+    # Defaults to "nil" which means an exception will be raised with
+    # the class it expected to find. This can be useful during
+    # development or when your just getting started.
+    #
+    # Setting a String or Class will cause the class to be used as a
+    # fallback anytime the expected view class lookup fails.
+    #
+    # Returns nil, String or Class.
+    config.mustache.default_view_class = nil
+
     # Internal: Ensures view path is included in autoload path.
     initializer 'mustache.add_autoload_paths', :before => :set_autoload_paths do |app|
       app.config.autoload_paths << app.root.join(app.config.mustache.view_path).to_s
@@ -70,6 +82,7 @@ class Mustache
         # It'd be better if ApplicationController could reference its
         # local app configuration.
         ActionView::Base.mustache_view_namespace = app.config.mustache.view_namespace
+        ActionView::Base.mustache_default_view_class = app.config.mustache.default_view_class
       end
     end
   end
