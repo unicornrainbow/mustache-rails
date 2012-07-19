@@ -30,4 +30,9 @@ class TestContext < MustacheTest
     assert_equal "<!DOCTYPE html>\n<title>Hello</title>\nHello, World!\n",
       @view.render(:template => "hello", :layout => "application")
   end
+
+  def test_template_cache_key
+    assert_equal "key:d9bfa3d9ed",
+      @view.render(:template => "cache_key")
+  end
 end

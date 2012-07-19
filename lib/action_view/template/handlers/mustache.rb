@@ -5,6 +5,7 @@ require 'action_view/helpers/mustache_helper'
 require 'action_view/mustache'
 require 'action_view/mustache/generator'
 require 'mustache'
+require 'digest/md5'
 
 module ActionView
   class Template
@@ -27,8 +28,11 @@ module ActionView
           # Use custom generator to generate the compiled ruby
           src = ActionView::Mustache::Generator.new.compile(tokens)
 
+          digest = Digest::MD5.hexdigest(template.source)[0, 10]
+          set_cache_key = "merge({:template_cache_key => \"#{digest}\"})"
+
           <<-RUBY
-            ctx = mustache_view.context; ctx.push(local_assigns); #{src}
+            ctx = mustache_view.context; ctx.push(local_assigns.#{set_cache_key}); #{src}
           RUBY
         end
       end

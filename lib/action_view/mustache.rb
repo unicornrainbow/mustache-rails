@@ -51,6 +51,15 @@ module ActionView
       @context ||= Context.new(self)
     end
 
+    # Public: Get cache key for current template contents.
+    #
+    # Useful for busting caches when the template changes.
+    #
+    # Returns 10 hex char String.
+    def template_cache_key
+      context[:template_cache_key]
+    end
+
     # Public: Forwards methods to original Rails view context
     #
     # Returns an Object.
