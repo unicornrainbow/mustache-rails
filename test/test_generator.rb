@@ -38,21 +38,17 @@ class TestGeneratorLineNumbers < MustacheTest
       render "{{#user}}\n{{/user}}\n{{b00m}}"
     end
 
+    assert_raise_on_line_number 1 do
+      render "{{#user}}{{b00m}}\n{{/user}}", :user => true
+    end
 
-    # TODO: Mustache parser doesn't disambiguate between trailing
-    # whitespace after a section tag.
-    #
-    # assert_raise_on_line_number 1 do
-    #   render "{{#user}}{{b00m}}\n{{/user}}", :user => true
-    # end
-    #
-    # assert_raise_on_line_number 2 do
-    #   render "{{#user}}{{/user}}\n{{b00m}}"
-    # end
-    #
-    # assert_raise_on_line_number 1 do
-    #   render "{{#user}}{{/user}}{{b00m}}"
-    # end
+    assert_raise_on_line_number 2 do
+      render "{{#user}}{{/user}}\n{{b00m}}"
+    end
+
+    assert_raise_on_line_number 1 do
+      render "{{#user}}{{/user}}{{b00m}}"
+    end
   end
 
   def test_inverted
@@ -64,20 +60,17 @@ class TestGeneratorLineNumbers < MustacheTest
       render "{{^user}}\n{{/user}}\n{{b00m}}"
     end
 
-    # TODO: Mustache parser doesn't disambiguate between trailing
-    # whitespace after a inverted tag.
-    #
-    # assert_raise_on_line_number 1 do
-    #   render "{{^user}}{{b00m}}{{/user}}", :user => false
-    # end
-    #
-    # assert_raise_on_line_number 2 do
-    #   render "{{^user}}{{/user}}\n{{b00m}}"
-    # end
-    #
-    # assert_raise_on_line_number 1 do
-    #   render "{{^user}}{{/user}}{{b00m}}"
-    # end
+    assert_raise_on_line_number 1 do
+      render "{{^user}}{{b00m}}{{/user}}", :user => false
+    end
+
+    assert_raise_on_line_number 2 do
+      render "{{^user}}{{/user}}\n{{b00m}}"
+    end
+
+    assert_raise_on_line_number 1 do
+      render "{{^user}}{{/user}}{{b00m}}"
+    end
   end
 
   def render(text, context = {})
