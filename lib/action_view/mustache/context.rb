@@ -15,16 +15,17 @@ module ActionView
 
       # Internal: Evaluate section block.
       #
+      # view   - ActionView::Context instance
       # buffer - ActiveSupport::SafeBuffer object
       # value  - Object value of section tag
       #
       # Returns nothing.
-      def _eval_section(buffer, value, &block)
+      def _eval_section(view, buffer, value, &block)
         if value
           if value == true
             yield
           elsif value.is_a?(Proc)
-            buffer.concat(v.call { capture(&block) }.to_s)
+            buffer.concat(value.call { view.capture(&block) }.to_s)
           else
             value = [value] unless value.is_a?(Array) || defined?(Enumerator) && value.is_a?(Enumerator)
             for h in value

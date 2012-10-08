@@ -50,7 +50,7 @@ module ActionView
       #
       # Returns String.
       def on_section(name, content, raw, delims)
-        "v = #{compile!(name)}; ctx._eval_section(@output_buffer, v) {\n#{compile!(content)}\n}; "
+        "v = #{compile!(name)}; ctx._eval_section(self, @output_buffer, v) {\n#{compile!(content)}\n}; "
       end
 
       # Internal: Compile inverted section.

@@ -39,4 +39,8 @@ class TestContext < MustacheTest
     assert_equal "key:d9bfa3d9ed",
       @view.render(:template => "cache_key")
   end
+
+  def test_lambda_section
+    assert_equal "<p>  42\n</p>", @view.render(:template => "lambda_section")
+  end
 end
