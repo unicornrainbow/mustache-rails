@@ -68,7 +68,7 @@ class Mustache
     # Internal: Adds .mustache template path to ActionController's view paths.
     initializer 'mustache.add_view_paths', :after => :add_view_paths do |app|
       ActiveSupport.on_load(:action_controller) do
-        append_view_path app.root.join(app.config.mustache.template_path).to_s
+        prepend_view_path app.root.join(app.config.mustache.template_path).to_s
       end
     end
 
